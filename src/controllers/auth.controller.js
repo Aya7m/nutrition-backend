@@ -104,7 +104,29 @@ export const login = async (req, res) => {
 // getProfile
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// updateProfile
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, age, weight, height, activityLevel, goal } = req.body;
+
+    const updatedData = {
+      name,
+      age,
+      weight,
+      height,
+      activityLevel,
+      goal,
+    };
+    const user = await User.findByIdAndUpdate(req.user._id, updatedData, {
+      new: true,
+    }).select("-password");
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
