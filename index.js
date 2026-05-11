@@ -31,9 +31,10 @@ export { io };
 const port = process.env.PORT;
 
 // ✅ هنا الحل
-app.use(cors({
-  origin: "http://localhost:5173",
-}));
+// app.use(cors({
+//   origin: "http://localhost:5173",
+// }));
+app.use(cors());
 
 app.use(express.json());
 
