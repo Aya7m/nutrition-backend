@@ -34,8 +34,8 @@ export const getMeals = async (req, res) => {
   try {
     const { type, search } = req.query;
 
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.max(Number(req.query.limit) || 10, 1);
 
     let filter = {};
 
@@ -47,29 +47,35 @@ export const getMeals = async (req, res) => {
     // search by name
     if (search) {
       filter.name = {
-        $regex: search,
+        $regex: search.trim(),
         $options: "i",
       };
     }
 
     const skip = (page - 1) * limit;
 
-    const meals = await Meal.find(filter)
-      .select("-__v")
-      .lean()
-      .skip(skip)
-      .limit(limit);
+    const [meals, total] = await Promise.all([
+      Meal.find(filter)
+        .select("-__v")
+        .sort({ createdAt: -1 })
+        .lean()
+        .skip(skip)
+        .limit(limit),
 
-    const total = await Meal.countDocuments(filter);
+      Meal.countDocuments(filter),
+    ]);
 
     res.status(200).json({
-      meals,
+      success: true,
       total,
       page,
       pages: Math.ceil(total / limit),
+      results: meals.length,
+      meals,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
