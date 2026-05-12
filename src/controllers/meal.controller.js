@@ -35,6 +35,7 @@ export const getMeals = async (req, res) => {
     const { type, search } = req.query;
 
     const page = Math.max(Number(req.query.page) || 1, 1);
+
     const limit = Math.max(Number(req.query.limit) || 10, 1);
 
     let filter = {};
@@ -44,12 +45,22 @@ export const getMeals = async (req, res) => {
       filter.type = type;
     }
 
-    // search by name
+    // search
     if (search) {
-      filter.name = {
-        $regex: search.trim(),
-        $options: "i",
-      };
+      filter.$or = [
+        {
+          name: {
+            $regex: search.trim(),
+            $options: "i",
+          },
+        },
+        {
+          type: {
+            $regex: search.trim(),
+            $options: "i",
+          },
+        },
+      ];
     }
 
     const skip = (page - 1) * limit;

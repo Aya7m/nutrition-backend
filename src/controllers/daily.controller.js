@@ -65,20 +65,13 @@ export const getDailyLog = async (req, res) => {
     });
 
     const goal =
-      user.goal === "lose"
-        ? 1800
-        : user.goal === "gain"
-        ? 2800
-        : 2200;
+      user.goal === "lose" ? 1800 : user.goal === "gain" ? 2800 : 2200;
 
     const totalCalories = log?.totalCalories || 0;
 
     const remaining = goal - totalCalories;
 
-    const progress = Math.min(
-      Math.round((totalCalories / goal) * 100),
-      100
-    );
+    const progress = Math.min(Math.round((totalCalories / goal) * 100), 100);
 
     return res.json({
       date: today,
@@ -91,8 +84,8 @@ export const getDailyLog = async (req, res) => {
         progress < 50
           ? "Keep going 💪"
           : progress < 100
-          ? "Almost there 🔥"
-          : "Goal achieved 🎉",
+            ? "Almost there 🔥"
+            : "Goal achieved 🎉",
     });
   } catch (error) {
     console.log("DAILY LOG ERROR:", error); // 👈 مهم جدًا
